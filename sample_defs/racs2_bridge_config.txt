@@ -1,2 +1,2 @@
-wss_uri=localhost
+wss_uri=127.0.0.1
 wss_port=8765

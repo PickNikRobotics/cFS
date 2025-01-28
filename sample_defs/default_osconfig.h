@@ -202,7 +202,7 @@
  * Leaving this undefined will produce the default behavior, which is to return errors to the caller
  * for these conditions.
  */
-#define OSAL_DEBUG_PERMISSIVE_MODE
+#define OSAL_DEBUG_PERMISSIVE_MODE 1
 
 /*
  * If OSAL_DEBUG_DISABLE_TASK_PRIORITIES is defined, the "priority" argument
@@ -211,7 +211,7 @@
  * purposes where a "runaway" thread running with elevated priority can hang
  * the entire system and make debugging difficult.
  */
-#undef OSAL_DEBUG_DISABLE_TASK_PRIORITIES
+#define OSAL_DEBUG_DISABLE_TASK_PRIORITIES 1
 
 /*
  * If OSAL_DEBUG_DISABLE_MUTEX_PRIO_INHERIT is defined, this will disable the priority

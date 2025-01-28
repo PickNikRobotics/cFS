@@ -64,28 +64,18 @@ void SAMPLE_TALKER_Main( void )
 
         // send message
         // set topic name
-        strcpy(RACS2_UserMsgPkt.ros2_topic_name, "/Recv/RACS2Bridge");
-        // define serialized body data
-        void *buffer;
-        int len=0;
-        RACS2BridgeStdMsgs *message;
-        message=(RACS2BridgeStdMsgs *)malloc(sizeof(RACS2BridgeStdMsgs));
-        racs2_bridge_std_msgs__init(message);
-        int string_length = 22;
-        char* buf[32];
-        sprintf(buf, "Message To ROS2 :%5d", count);
-        message->string_data = (char *)malloc(sizeof(string_length));
-        OS_printf("SAMPLE_TALKER: [Send][MsgID=0x%x][%s]\n", RACS2_BRIDGE_MID, buf);
-        strncpy(message->string_data, buf, string_length);
+        strcpy(RACS2_UserMsgPkt.ros2_topic_name, "/RACS2_objective/request");
+        // define serialized body string_data
+        char objective_name[] = "Push Button";
+        uint8 obj_len = strlen(objective_name);
 
-        len = racs2_bridge_std_msgs__get_packed_size(message);
-        buffer=malloc(len);
-        racs2_bridge_std_msgs__pack(message, buffer);
+        memcpy(RACS2_UserMsgPkt.body_data, &obj_len, sizeof(obj_len));
+        memcpy(RACS2_UserMsgPkt.body_data + sizeof(obj_len), objective_name, obj_len);
 
-        // set body data
-        strncpy(RACS2_UserMsgPkt.body_data, buffer, len);
+        OS_printf("SAMPLE_TALKER: [Send][MsgID=0x%x][%s]\n", RACS2_BRIDGE_MID, RACS2_UserMsgPkt.body_data);
+
         // set body data length
-        RACS2_UserMsgPkt.body_data_length = len;
+        RACS2_UserMsgPkt.body_data_length = sizeof(obj_len) + obj_len;
 
         // send data
         CFE_SB_TimeStampMsg((CFE_SB_Msg_t *) &RACS2_UserMsgPkt);
@@ -98,12 +88,11 @@ void SAMPLE_TALKER_Main( void )
             OS_printf("SAMPLE_TALKER: Error: sending is failed. status = 0x%x\n", status);
         }
 
-        free(buffer);
-        free(message->string_data);
-        free(message);
-        memset(buf, '\0', sizeof(buf));
+        memset(RACS2_UserMsgPkt.body_data, '\0', sizeof(RACS2_UserMsgPkt.body_data));
 
-        count++;
+        if (count++ == 1) {
+      break;
+    }
     }
 
     CFE_ES_ExitApp(RunStatus);
